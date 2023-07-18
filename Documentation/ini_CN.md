@@ -1,31 +1,9 @@
-a
 <!--
-V0.2.0
-By lewis252310
+V1.1.0
+Author: lewis252310 (DC-AGMG !someone name has 63B long?)
+Helper: LeoMod, DiXiao, silent
 
 -->
-
-<style>
-    /* body { background-color: #404040 !important }
-    h1,h2,h3,h4,h5,h6,p { color: #FFF !important } */
-    .code_block {
-        background-color: #EEEEEE;
-        padding: 10px;
-        margin: 10px;
-    }
-    a.section {
-        color: #00AA00;
-    }
-    .properties {
-        color: #9F88FF;
-    }
-    .comments{
-        color: #666666;
-    }
-    .value {
-        color: #0066FF
-    }
-</style>
 
 #### 前言
 這是一個基於 GIMI 的 ini 檔案解析/教學/文檔
@@ -72,68 +50,72 @@ ini 的簡單介紹就到這裡，基本上只要知道怎麼分辨節跟參數�
 
 現在可以來說說 GIMI 實際上會用到的各種東西了。我們就從 GIMI 的 ini 檔案中的各種保留字開始。
 
----
-
-Here is a code example. Those that can be clicked on are words with their own meanings, and those that can't be clicked on are normal values.
-
-<div class="code_block">
-    [<a class="section" href="#override" title="Override">TextureOverrideLumainBody</a>]
-    <br>
-    <a class="properties" href="#hash" title="Hash">hash</a> = <span class="value" title="Normal value">afd36b46</span>
-    <br>
-    <a class="properties" herf="#match_first_index" title="Match first index">match_first_index</a> = <span class="value" title="Normal value">12800</span>
-    <br>
-    <a class="properties" href="#handling">handling</a> = <span class="value">skip</span>
-    <br>
-    <a class="properties" href="#ib">ib</a> = <a class="resource" href="#resource">ResourceLumainBodyIB</a>
-    <br><br>
-    [<a class="section" href="#resource">ResourceLumainBodyIB</a>]
-    <br>
-    <a class="properties" href="#type-resourse">type</a> = <span class="value">Buffer</span>
-    <br>
-    <a class="properties" href="#format">format</a> = <span class="value">DXGI_FORMAT_R32_UINT</span>
-    <br>
-    <a class="properties" href="#filename">filename</a> = <span class="value">LumainBody.ib</span>
-</div>
-
----
-
-
 ### 語法樹
 > 這裡是語法樹，修飾詞在下一節
 
 [[\*Override\*]](#override)
+
 ├ [hash](#hash)
+
 ├ [handling](#handling)
+
 ├ [drawindexed](#drawindexed)
+
 ├ [match_first_index](#match_first_index)
+
 ├ [vb0, vb1, vb2, ...](#vbx)
+
 ├ [ib](#ib)
+
 ├ [ps-t0, ps-t1, ps-t2, ps-t3, ...](#ps-tx)
+
 ├ [filter_index](#filter_index)
+
 ├ [allow_duplicate_hash](#allow_duplicate_hash)
+
 ├ [match_priority](#match_priority)
+
 ├ [match_type](#match_type)
+
 ├ [match_width](#match_width)
+
 ├ [match_height](#match_height)
+
 ├ [match_msaa](#match_msaa)
+
 ├ [match_msaa_quality](#match_msaa_quality)
+
 ├ [match_usage](#match_usage)
+
 ├ [match_bind_flags](#match_bind_flags)
+
 ├ [match_cpu_access_flags](#match_cpu_access_flags)
+
 ├ [match_misc_flags](#match_misc_flags)
+
 ├ [match_byte_width](#match_byte_width)
+
 ├ [match_stride](#match_stride)
+
 ├ [match_mips](#match_mips)
+
 ├ [match_format](#match_format)
+
 ├ [match_depth](#match_depth)
+
 └ [match_array](#match_array)
 
+
 [[Resourse*]](#resource)
+
 ├ [type](#type-resourse)
+
 ├ [filename](#filename)
+
 ├ [format](#format)
+
 ├ [stride](#stride)
+
 └ [data](#data)
 
 [[CommandList*]](#commandlist)
@@ -142,9 +124,13 @@ Here is a code example. Those that can be clicked on are words with their own me
 
 [[Present]](#present)
 
+
 [[Key*]](#key-section)
+
 ├ [key](#key-properties)
+
 ├ [type](#type-key)
+
 └ [warp](#warp)
 
 > 如果沒有在這裡找到你需要的，那可能是保留字或修飾詞。
@@ -154,12 +140,20 @@ Here is a code example. Those that can be clicked on are words with their own me
 ### 修飾詞
 > 這裡是修飾詞，語法樹在上一節
 
+
 [post](#post)
+
 [pre](#pre)
+
 [global](#global)
+
 [local](#local)
+
 [persist](#persist)
-[ref](#ref) <- 還不知道
+
+[ref](#ref)
+
+[copy](#copy)
 
 ---
 
@@ -167,32 +161,35 @@ Here is a code example. Those that can be clicked on are words with their own me
 > 這裡是參數保留字，
 
 [if, endif, else if, else](#條件-condition)
+
 [run](#run)
+
+[time](#time)
 
 ---
 
 ### 規則
 > 這裡是一些通用規則
 
+
 [變數 (variable)](#變數-variable)
+
 [條件 (condition)](#條件-condition)
+
 [錯誤訊息 (ERROR msg)](#錯誤訊息-error-msg)
-[運算符 (Operators)](#運算符-operators)
+
+[運算符 (Operators)](#邏輯運算福-logical-operators)
 
 ---
 
 ## Override
- - > Attribute: 保留字 節 hash 觸發 偵聽
-   > Parents
-   > Childs: [hash]()
-
 
 有紋理覆蓋(`TextureOverride`)與著色器覆蓋(`ShaderOverride`)兩種。
 當螢幕上有對應的哈希值物件時便會觸發對應的 Override 節運作。
 是 GIMI 的運作核心，是所有 Mod 的開始。
 ```ini
 [*Override*]
-[TextureOverrideLumainBody]
+[TextureOverrideLumineBody]
 [ShaderOverridGroundHealthBar]
 ```
 
@@ -201,7 +198,7 @@ Here is a code example. Those that can be clicked on are words with their own me
 [Override](#override)的參數之一。
 告訴 GIMI 他需要注意哪個物件，並且發現時執行對應的動作。
 ```ini
-[TextureOverrideLumainBody]
+[TextureOverrideLumineBody]
 hash = afd36b46
 ```
 
@@ -210,7 +207,7 @@ hash = afd36b46
 [Override](#override)的參數之一。
 對指定物件的渲染操作，通常會使用 skip 來跳過渲染。
 ```ini
-[TextureOverrideLumainPantsu]
+[TextureOverrideLuminePantsu]
 handling = skip
 ```
 
@@ -219,13 +216,13 @@ handling = skip
 告訴 GIMI 進行我們自己的繪製，而不是使用遊戲繪製。
 通常會和 [handling](#handling) 一起使用。
 ```ini
-[TextureOverrideLumainBody]
+[TextureOverrideLumineBody]
 drawindexed = auto
 ```
 
 #### draw
 ```ini
-[TextureOverrideLumainBlend]
+[TextureOverrideLumineBlend]
 draw = 25600, 0
 ```
 
@@ -233,32 +230,32 @@ draw = 25600, 0
 
 指定緩衝區的起始位置。有時候一個哈希可能包含不只一個物件，所以需要指定能正確加載資源。
 ```ini
-[TextureOverrideLumainBody]
+[TextureOverrideLumineBody]
 match_first_index = 25600
 ```
 
 #### vbx
 頂點緩衝區(vertex buffer)。通常會直接指向其他 [Resource](#resource) 節。
 ```ini
-[TextureOverrideLumainBody]
-vb0 = ResourceLumainPosition
+[TextureOverrideLumineBody]
+vb0 = ResourceLuminePosition
 ```
 
 #### ib
 縮引緩衝區(index buffer)。通常會直接指向裝有 IB 的 [Resource](#resource) 節。
 ```ini
-[TextureOverrideLumainBody]
-vb0 = ResourceLumainBodyIB
+[TextureOverrideLumineBody]
+vb0 = ResourceLumineBodyIB
 ```
 
 #### ps-tx
 紋理資源層。有幾種不同的類型，一般來說 t0 是紋理貼圖，t1 是光線貼圖，t2 是光澤貼圖， t3 是陰影貼圖。
 ```ini
-[TextureOverrideLumainPantsu]
-ps-t0 = ResourceLumainPantsuDiffuse
-ps-t1 = ResourceLumainPantsuLightMap
-ps-t2 = ResourceLumainPantsuMetalMap
-ps-t3 = ResourceLumainPantsuShadowRamp
+[TextureOverrideLuminePantsu]
+ps-t0 = ResourceLuminePantsuDiffuse
+ps-t1 = ResourceLuminePantsuLightMap
+ps-t2 = ResourceLuminePantsuMetalMap
+ps-t3 = ResourceLuminePantsuShadowRamp
 
 ```
 
@@ -268,7 +265,7 @@ ps-t3 = ResourceLumainPantsuShadowRamp
 應該是會占用到 ps-t0，所以不確定倒底是不是一個好辦法。
 <!-- 其實還是不是很確定，從 Bard 得到的結果是說可以禁用指定的過濾器 -->
 ```ini
-[TextureOverrideLumainGlasses]
+[TextureOverrideLumineGlasses]
 filter_index = 34
 ```
 
@@ -280,7 +277,7 @@ ShaderOverride 參數。
  - false - 有重複時不覆蓋
  - overrule - 強制覆蓋，好像是插件層級的覆蓋。
 ```ini
-[ShaderOverrideLumainQEffect]
+[ShaderOverrideLumineQEffect]
 hash = 030dbce199e10697
 allow_duplicate_hash = overrule
 ```
@@ -290,7 +287,7 @@ TextureOverride 參數。
 宣告覆蓋先後的順序權重。值越高則越優先。
 GIMI 裡不怎麼會用到，唯一會用上的情況是用他來消除哈希相衝的問題，直接設定成 0 就好了。
 ```ini
-[TextureOverrideLumainGlasses]
+[TextureOverrideLumineGlasses]
 match_priority = 0
 ```
 
@@ -336,8 +333,7 @@ match_msaa_quality = 1
 #### match_usage
 TextureOverride 參數。
 這個設置沒有太大的意義，默認 DEFAULT。
-更詳細的資訊：
-https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_usage
+更詳細的資訊在[這裡](https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_usage)
 ```ini
 [TextureOverrideUsage]
 match_usage = IMMUTABLE
@@ -404,8 +400,7 @@ match_mips = 1
 TextureOverride 參數。
 依照 [format](#format) 過濾。
 對於修改沒有恆定 [hash](#hash) 的資源很有用。
-DX 格式列表：
-https://learn.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format
+DX 格式列表在[這裡](https://learn.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
 ```ini
 [TextureOverrideFormat]
 match_format = R32G32B32A32_FLOAT
@@ -430,60 +425,57 @@ match_array = 12
 ---
 
 ## Resource
- - > 保留字 節 資源
 
 我不確定他是不是 GIMI 保留字之一，但因為帶有資源的節基本都是以`Resource`開頭，姑且也視為節保留字吧。
 除了便於識別，也比較不會跟其他真正有特殊用途的節搞混。
 通常用於儲存各種資源的位置。
 ```ini
 [Resource*]
-[ResourceLumainPantsu]
+[ResourceLuminePantsu]
 [ResourceMyRGBWeapon]
 ```
 
 #### type (Resourse)
-這的是 [Resourse](#resource) 下的設參數，而不是 [[Key]](#key-section) 下的參數。
+這的是 [Resourse](#resource) 下的參數，而不是 [Key](#key-section) 下的參數。
 宣告這個資源的類型，一般來說只會用到緩衝(Buffer)類型。
 ```ini
-[ResourceLumainPantsuPosition]
+[ResourceLuminePantsuPosition]
 type = Buffer
 ``` 
 
 #### filename
- - > 保留字 餐數 資源
 
 只出現在 [Resourse](#resource) 底下，使用相對路徑指向資源的儲存位置。
 不清楚是否支持絕對路徑，但在這種可轉發數據資料中使用絕對路徑也沒有意義。
 ```ini
-[ResourceLumainPantsu]
-filename = .\pantsu0\LumainPantsu.dds
+[ResourceLumineBodyDiffuse]
+filename = .\Lumineparts\LumineBodyDiffuse.dds
 ```
 
 #### format
 用於 IB 資源，單個縮引值的大小
 ```ini
-[ResourceLumainBodyIB]
+[ResourceLumineBodyIB]
 format = DXGI_FORMAT_R32_UINT
 ```
 
 #### stride
 用於 VB 資源，單個頂點總數據的字節大小
 ```ini
-[ResourceLumainPantsu]
+[ResourceLuminePantsu]
 stride = 20
 ```
 
 #### data
 用於詳細日誌紀錄、用戶介面文本等
 ```ini
-[ResourceLumainPantsu]
+[ResourceLuminePantsu]
 data = "Jsut a string."
 ```
 
 ---
 
 ## CommandList
- - > 保留字 節 運行
 
 我不確定`CommandList`是不是保留字之一，因為理論上他就只是一個好幾條參數堆在一起的節，只有在有需要的時候才會呼叫。
 不過其功能類似於 Function，所以我認為還是視為保留字會比較好。
@@ -498,7 +490,6 @@ data = "Jsut a string."
 ---
 
 ## Constants
- - > 保留字 節 運行 變數
 
 全域變數的初始化位置。
 只要是全域變數(`global $var`)都需要在`Constants`節底下宣告，不然 GIMI 認不出你的變數。
@@ -511,7 +502,6 @@ global $active = 0
 ---
 
 ## Present
- - > 保留字 節 運行
 
 不斷重複執行的節。
 這個節會在每一幀開始時運行一次。
@@ -526,7 +516,6 @@ post $active = 0
 ---
 
 ## Key (section)
- - > 保留字 節 偵聽 觸發
 
 定義 GIMI 要偵測那些按鍵的狀況。
 按下去之後執行設定好的運作。
@@ -547,7 +536,7 @@ key = q
 
 #### type (Key)
 
-這的是 [[Key]](#key-section) 下的設參數，而不是 [Resourse](#resource) 下的參數。
+這的是 [Key section](#key-section) 下的參數，而不是 [Resourse](#resource) 下的參數。
 宣告 [key](#key-properties) 的類型。有四種可用值，分別是默認、cycle、hold 及 toggle。
 1. 默認：單純運行。沒有寫 type 時默認的類型，單純運行所寫配置。
 2. cycle：循環。按順序遍歷所寫列表，可藉由 [warp](#warp) 控制是否頭尾相連循環。
@@ -576,7 +565,6 @@ $swapvar = 0, 1, 2, 3
 ## 修飾詞
 
 #### post
- - > 修飾詞 參數 流程控制
 
 指定對應參數在幀 ***結束時*** 運算，例如設定幀開始時間。
 ```ini
@@ -584,7 +572,6 @@ post $triggerDate = time
 ```
 
 #### pre
- - > 修飾詞 參數 流程控制
 
 指定對應參數在幀 ***開始時*** 運算，例如計算 [Present](#present) 的運行次數。
 ```ini
@@ -592,7 +579,6 @@ pre $auxTime = $auxTime + 1
 ```
 
 #### global
- - > 修飾詞 參數 流程控制 變數
 
 宣告**全域**變數時必要的修飾詞。 [變數規則請戳我](#變數-variable)
 另外注意，全域變數只會在 [Constants](#constants) 宣告。
@@ -602,7 +588,6 @@ global $a_global_var = 1
 ```
 
 #### local
- - > 修飾詞 參數 流程控制 變數
 
 宣告**區域**變數時必要的修飾詞。 [變數規則請戳我](#變數-variable)
 區域變數可以在任何需要計算的地方隨時宣告，但不確定 GIMI 對於區域變數的回收機制是如何，至少到目前 local 變數見的不多。
@@ -612,7 +597,6 @@ local $i = 0
 ```
 
 #### persist
- - > 修飾詞 參數 變數
 
 宣告變數**持久化**時必要的修飾詞。 [變數規則請戳我](#變數-variable)
 只會出現在全域變數(global)的宣告上，宣告後這個變數就會持久儲存在`d3dx_user.ini`裡，只有使用`Ctrl + Alt + F10`之後才會重製。
@@ -622,10 +606,20 @@ global persist $a_persist_var = 1
 ```
 
 #### ref
-暫無更多詳細訊息…
-應該是類似於指針或指向的作用，
+`ref` 或 `reference`。用來指向資源的指針。
+程序猿或許會喜歡這個強大的工具。
+
 ```ini
 pre ResourceHelp = ref ResourceHelpFull
+pre ResourceHelp = reference ResourceHelpFull
+```
+
+#### copy
+
+將資源複製到新的資源中。
+在資源被其他著色器或繪製調用修改之前保留一份副本是很有幫助的。
+```ini
+pre ResourceHelp = copy ResourceHelpFull
 ```
 
 #### run
@@ -634,22 +628,29 @@ pre ResourceHelp = ref ResourceHelpFull
 常見的就是指向 [CommandList](#commandlist) 去做更進一步的運算。
 ```ini
 [KeyChangeColor]
-run = CommandListLumainChangePanTsuColor
+run = CommandListLumineChangePanTsuColor
+```
+
+#### time
+
+內置變量。
+計算的是遊戲啟動後到現在的浮點時間，單位為秒。
+```ini
+$last_date = time
 ```
 
 ---
 
 #### 變數 (variable)
- - > 變數 規則
 
 GIMI 中只有以`$`符號開頭才會識別為變數，而如果在一些應該是變數的位置卻沒有`$`符號，那個就是[保留字](#保留字)。
 ```ini
 $last_date = time
 ; $last_date 是我們設定的變數，time 則是 GIMI 的保留字。
 ```
+[time 相關在這裡](#time)
 
 #### 條件 (condition)
- - > 條件 規則
 
 GIMI 中的條件控制保留字有`if`，`else if`，`else`以及`endif`
 用`if`開始條件塊，用`endif`結束條件塊。支持巢狀。
@@ -666,20 +667,32 @@ endif
 
 #### 錯誤訊息 (ERROR msg)
 
-暫無更多詳細訊息…
+大多數編譯錯誤，尤其是關於著色器方面的衝突會在螢幕左上角顯示。
+當涉及 `ini` 時會顯示警告，提示發現到的可能造成問題的衝突。
+人類可讀，可以很好的了解衝突文件在哪裡。
 
-#### 運算符 (Operators)
+#### 算數運算符 (Arithmetical Operators)
 
-這只是一個在 GIMI 允許使用的運算符列表，不包含任何使用教程。
+這只是一個在 GIMI 允許使用的算數運算符列表，不包含任何教程。
 
-| Operators | Name           | Note                      |
-| --------- | -------------- | ------------------------- |
-| +         | Addition       |                           |
-| -         | Subtraction    |                           |
-| *         | Multiplication |                           |
-| /         | Division       |                           |
-| %         | Modulus        |                           |
-| =         | Assignment     |                           |
-| ==        | Equal          |                           |
-| !=        | Not equal      |                           |
-| !==       |                | not sure what dif with != |
+| Operators | Name           | Note              |
+| --------- | -------------- | ------------------|
+| +         | Addition       |                   |
+| -         | Subtraction    |                   |
+| *         | Multiplication |                   |
+| /         | Division       |                   |
+| %         | Modulus        |                   |
+| =         | Assignment     |                   |
+| ==        | Equal          |                   |
+| !=        | Not equal      |                   |
+| !==       | Not equal      | 同 `!=` 但是更嚴格 |
+
+#### 邏輯運算福 (Logical Operators)
+
+這只是一個在 GIMI 允許使用的邏輯運算符列表，不包含任何教程。
+
+| Operators | Name           | Note              |
+| --------- | -------------- | ----------------- |
+| &&        | AND            |                   |
+| \|\|      | OR             |                   |
+| ( )       | Parenthesis    |                   |
