@@ -1,5 +1,5 @@
 <!--
-V1.1.0
+V1.2.0
 Author: lewis252310 (DC-AGMG !someone name has 63B long?)
 Helper: LeoMod, DiXiao, silent
 
@@ -118,9 +118,12 @@ ini 的簡單介紹就到這裡，基本上只要知道怎麼分辨節跟參數�
 
 └ [data](#data)
 
+
 [[CommandList*]](#commandlist)
 
+
 [[Constants]](#constants)
+
 
 [[Present]](#present)
 
@@ -131,7 +134,23 @@ ini 的簡單介紹就到這裡，基本上只要知道怎麼分辨節跟參數�
 
 ├ [type](#type-key)
 
-└ [warp](#warp)
+├ [warp](#warp)
+
+├ [delay](#delay)
+
+├ [release_delay](#release_delay)
+
+├ [transition](#transition)
+
+├ [transition_type](#transition_type)
+
+├ [release_transition](#release_transition)
+
+├ [release_transition_type](#release_transition_type)
+
+├ [convergence](#convergence)
+
+└ [separation](#separation)
 
 > 如果沒有在這裡找到你需要的，那可能是保留字或修飾詞。
 
@@ -159,6 +178,8 @@ ini 的簡單介紹就到這裡，基本上只要知道怎麼分辨節跟參數�
 
 ### 保留字
 > 這裡是參數保留字，
+
+[x, y, z, w](#著色器變量)
 
 [if, endif, else if, else](#條件-condition)
 
@@ -195,7 +216,7 @@ ini 的簡單介紹就到這裡，基本上只要知道怎麼分辨節跟參數�
 
 #### hash
 
-[Override](#override)的參數之一。
+[Override](#override) 參數。
 告訴 GIMI 他需要注意哪個物件，並且發現時執行對應的動作。
 ```ini
 [TextureOverrideLumineBody]
@@ -204,7 +225,7 @@ hash = afd36b46
 
 #### handling
 
-[Override](#override)的參數之一。
+[Override](#override) 參數。
 對指定物件的渲染操作，通常會使用 skip 來跳過渲染。
 ```ini
 [TextureOverrideLuminePantsu]
@@ -221,6 +242,7 @@ drawindexed = auto
 ```
 
 #### draw
+預先建立所需要的緩衝區大小，目前只在 Blend 項下出現過。
 ```ini
 [TextureOverrideLumineBlend]
 draw = 25600, 0
@@ -228,7 +250,7 @@ draw = 25600, 0
 
 #### match_first_index
 
-指定緩衝區的起始位置。有時候一個哈希可能包含不只一個物件，所以需要指定能正確加載資源。
+指定緩衝區的起始位置。有時候一個哈希可能包含不只一個物件，所以需要指定才能正確加載資源。
 ```ini
 [TextureOverrideLumineBody]
 match_first_index = 25600
@@ -245,11 +267,11 @@ vb0 = ResourceLuminePosition
 縮引緩衝區(index buffer)。通常會直接指向裝有 IB 的 [Resource](#resource) 節。
 ```ini
 [TextureOverrideLumineBody]
-vb0 = ResourceLumineBodyIB
+ib = ResourceLumineBodyIB
 ```
 
 #### ps-tx
-紋理資源層。有幾種不同的類型，一般來說 t0 是紋理貼圖，t1 是光線貼圖，t2 是光澤貼圖， t3 是陰影貼圖。
+紋理資源層。有幾種不同的類型，對於 GIMI 來說 t0 是紋理貼圖，t1 是光線貼圖，t2 是光澤貼圖，t3 是陰影貼圖。
 ```ini
 [TextureOverrideLuminePantsu]
 ps-t0 = ResourceLuminePantsuDiffuse
@@ -261,9 +283,51 @@ ps-t3 = ResourceLuminePantsuShadowRamp
 
 #### filter_index
 
-宣告一個檢查值，定且能夠允許在其他地方進行檢查。
-應該是會占用到 ps-t0，所以不確定倒底是不是一個好辦法。
-<!-- 其實還是不是很確定，從 Bard 得到的結果是說可以禁用指定的過濾器 -->
+宣告一個檢查值，並且在其夥伴物件上進行檢查或是用於賦值。
+這對於某些嚴格條件或是跨物件判斷時是非常強大且精準的。
+關於夥伴物件和其相關檢查方式由於異常複雜且難以理解，在 Docs 建置初期將不會對此進行講解。 `Timestamp=2023-07-20`
+
+<!-- 
+Partner objects are objects of different types that share common parts.
+For example, A IB and a PS which draw the pause page at the same time, there are a pair of partner objects.
+When checking at partner object, need to check the type of the object that **declares filter_index properties**.
+Here is an example.
+```ini
+[TextureOverrideLumineBikiniIB]
+filter_index = 5
+
+[ShaderOverrideLumineBikiniPS]
+if ib == 5
+    run = CommandListLumineChangeSunglasses
+endif
+```
+In this case, When LumineBikiniIB is drawing, the filter_index properties will be execute at the same time.
+And when LumineBikiniPS is drawing, a condition will execute. if ib == 5 then run CommandListLumineChangeSunglasses.
+The part of ib == 5 is the filter_index = 5 properties which from LumineBikiniIB.
+Rest is the same, if filter_index is declared in vs, then in its partner object it is checking if vs is the specified value.
+ -->
+
+<!-- 
+所謂夥伴物件是指不同類型但有共同部分的物件，例如同時繪製暫停頁面的 IB 和 PS 就是一對夥伴物件。
+在夥伴物件檢查時需以**宣告此參數**的物件的類型做檢查。
+這邊直接上例子
+```ini
+[TextureOverrideLumineBikiniIB]
+filter_index = 5
+
+[ShaderOverrideLumineBikiniPS]
+if ib == 5
+    run = CommandListLumineChangeSunglasses
+endif
+```
+在這個例子中，當 LumineBikiniIB 被繪製時同時會運行 filter_index 參數
+而在 LumineBikiniPS 被繪製時會執行一個條件，如果 ib == 5 則運行 LumineChangeSunglasses
+當中 ib == 5 的來源就是 LumineBikiniIB 運行的 filter_index = 5 參數
+剩餘同理，如果是在 vs 中使用 filter_index，那麼在其夥伴物件就是檢查 vs 是否為指定值。
+這邊還不清楚的地方是如果是在 PS 使用 filter_index 應該對哪一層資源進行判斷，是 ps-t0 抑或 ps。
+ -->
+
+
 ```ini
 [TextureOverrideLumineGlasses]
 filter_index = 34
@@ -285,7 +349,7 @@ allow_duplicate_hash = overrule
 #### match_priority
 TextureOverride 參數。
 宣告覆蓋先後的順序權重。值越高則越優先。
-GIMI 裡不怎麼會用到，唯一會用上的情況是用他來消除哈希相衝的問題，直接設定成 0 就好了。
+GIMI 裡不怎麼會用到，唯一會用上的情況是用他來消除哈希相衝的問題，直接宣告成 0 就好了。
 ```ini
 [TextureOverrideLumineGlasses]
 match_priority = 0
@@ -510,7 +574,7 @@ global $active = 0
 [Present]
 post $active = 0
 ```
-`Constants` 同 [CommandList](#commandlist) 是用於各種運算的區域，所以也沒有固定參數，但一般來說不會在這裡直接指向 [Resource](#resource)，而是先指向 CommandList 再去呼叫 Resource
+`Constants` 同 [CommandList](#commandlist) 是用於各種運算的區域，所以也沒有固定參數，但一般來說不會在這裡直接指向 [Resource](#resource)，而是先指向 `CommandList` 再去呼叫 `Resource`
 
 
 ---
@@ -528,10 +592,12 @@ type = toggle
 
 #### key (properties)
 用於 [Key](#key-section) 節，指定要監聽哪個按鍵。
+可以複數設置，即將不同按鍵綁定到同一個 Key 節
 在[這裡](https://learn.microsoft.com/zh-tw/windows/win32/inputdev/virtual-key-codes?redirectedfrom=MSDN)可以找到所有可用的按鍵類型。
 ```
 [KeyHelp]
 key = q
+key = XB_X
 ```
 
 #### type (Key)
@@ -539,15 +605,33 @@ key = q
 這的是 [Key section](#key-section) 下的參數，而不是 [Resourse](#resource) 下的參數。
 宣告 [key](#key-properties) 的類型。有四種可用值，分別是默認、cycle、hold 及 toggle。
 1. 默認：單純運行。沒有寫 type 時默認的類型，單純運行所寫配置。
+   ```ini
+   [KeyK]
+   key = k
+   type = cycle
+   $swapvar = 0, 1, 2, 3
+   ```
 2. cycle：循環。按順序遍歷所寫列表，可藉由 [warp](#warp) 控制是否頭尾相連循環。
-3. hold：長按。長按時持續觸發，可以應用在一些需要長按的技能上。
-4. toggle：開關。單純的開關，如果上一次觸發是 1，那麼下一次觸發就是 0。
-```ini
-[KeyK]
-key = k
-type = cycle
-$swapvar = 0, 1, 2, 3
-```
+    ```ini
+    [KeyK]
+    key = k
+    type = cycle
+    $swapvar = 0, 1, 2, 3
+    ```
+3. hold：長按。按壓時持續觸發，並在釋放時恢復原本的值(其實就是 toggle type 的加長版)。可以應用在一些需要長按的技能上。
+   ```ini
+   [KeyK]
+   key = k
+   type = hold
+   $holdding = 1
+   ```
+4. toggle：開關。單純的開關，會在指定值與 0 之間切換，如沒有指定值則預設 1。
+   ```ini
+   [KeyK]
+   key = k
+   type = toggle
+   $switch = 2
+   ```
 
 #### warp
 控制 key - cycle 類型時是否允許頭尾相連循環。
@@ -560,13 +644,100 @@ type = cycle
 $swapvar = 0, 1, 2, 3
 ```
 
+#### delay
+**注意，現在這個參數是一個運作方式不如預期的參數，未來可能會修改。**
+~~設置 key - hold 需要按住多久後才執行操作。~~
+設置 key 需要按住多久才執行操作。
+單位為毫秒(ms)。
+```ini
+[KeyK]
+key = k
+type = cycle
+delay = 100
+$swapvar = 0, 1, 2, 3
+```
+這裡的 delay 設置 100，也就是說要長按 k 超過 100ms 之後才會觸發。
+另外需要注意的是，目前的 delay 和 [key - hold](#type-key) 關係不明確。(雖然在找到的文檔中表示目前暫時只能應用於 hold?)
+
+#### release_delay
+設置 key - hold 在釋放按鍵之後繼續執行的額外時間。
+單位為毫秒(ms)。
+```ini
+[KeyK]
+key = k
+type = hold
+release_delay = 600
+```
+這裡 release_delay 設置 600，也就是說在釋放 k 之後還會持續 600ms 的運作。
+
+#### transition
+**注意，現在還不清楚這個參數在 GIMI 中的作用，所以不過多論述。**
+平滑過度物件在兩個關鍵幀之間的視覺效果。
+單位為毫秒(ms)。
+```ini
+[KeyK]
+key = k
+transition = 100
+```
+
+
+#### transition_type
+**注意，現在還不清楚這個參數在 GIMI 中的作用，所以不過多論述。**
+指定 [transition](#transition) 所使用的平滑曲線類型。
+目前已知有 linear 和 cosine 類型。
+```ini
+[KeyK]
+key = k
+transition = 100
+transition_type = linear
+```
+
+#### release_transition
+**注意，現在還不清楚這個參數在 GIMI 中的作用，所以不過多論述。**
+平滑過度物件在兩個關鍵幀之間的視覺效果。
+單位為毫秒(ms)。
+```ini
+[KeyK]
+key = k
+release_transition = 200
+```
+
+#### release_transition_type
+**注意，現在還不清楚這個參數在 GIMI 中的作用，所以不過多論述。**
+指定 [release_transition](#release_transition) 所使用的平滑曲線類型。
+目前已知有 linear 和 cosine 類型。
+```ini
+[KeyK]
+key = k
+release_transition = 200
+release_transition_type = cosine
+```
+
+#### convergence
+**注意，現在還不清楚這個參數在 GIMI 中的作用，所以不過多論述。**
+收斂。
+```ini
+[KeyK]
+key = k
+convergence = 0.7
+```
+
+#### separation
+**注意，現在還不清楚這個參數在 GIMI 中的作用，所以不過多論述。**
+分離。
+```ini
+[KeyK]
+key = k
+separation = 1.2
+```
+
 ---
 
 ## 修飾詞
 
 #### post
 
-指定對應參數在幀 ***結束時*** 運算，例如設定幀開始時間。
+指定對應參數在幀 ***結束時*** 運算，例如設定幀結束時間。
 ```ini
 post $triggerDate = time
 ```
@@ -599,7 +770,7 @@ local $i = 0
 #### persist
 
 宣告變數**持久化**時必要的修飾詞。 [變數規則請戳我](#變數-variable)
-只會出現在全域變數(global)的宣告上，宣告後這個變數就會持久儲存在`d3dx_user.ini`裡，只有使用`Ctrl + Alt + F10`之後才會重製。
+只會使用在全域變數(global)的宣告上，宣告後這個變數就會持久儲存在`d3dx_user.ini`裡，只有使用`Ctrl + Alt + F10`之後才會重製。
 ```ini
 [Constants]
 global persist $a_persist_var = 1
@@ -622,6 +793,21 @@ pre ResourceHelp = reference ResourceHelpFull
 pre ResourceHelp = copy ResourceHelpFull
 ```
 
+---
+
+## 保留字
+
+#### 著色器變量
+x, y, z 和 w 是能夠從著色器訪問的變量。缺點是他們沒有命名空間，所以在使用上會顯得有些笨拙。
+在 ini 中也能夠作為一般變數(但極度不推薦)。
+```ini
+[CommandListRGBPantsu]
+x = 1
+y = 0
+z = 1
+w = 1.5
+```
+
 #### run
 
 宣告要執行的節。
@@ -634,7 +820,7 @@ run = CommandListLumineChangePanTsuColor
 #### time
 
 內置變量。
-計算的是遊戲啟動後到現在的浮點時間，單位為秒。
+遊戲啟動後到現在的浮點時間，單位為秒。
 ```ini
 $last_date = time
 ```
