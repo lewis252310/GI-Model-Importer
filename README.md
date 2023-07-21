@@ -1,5 +1,10 @@
 EN | [中文](CN_README.md)
 
+# Attention! This is not the [main GIMI repository](https://github.com/SilentNightSound/GI-Model-Importer), do not report any GIMI-related bugs here.
+## This repository is used to build the CN ver of GIMI Docs, and only accepts questions about Docs.
+
+---
+
 # Genshin-Impact-Model-Importer (GIMI)
 Tools and instructions for importing custom models into Genshin Impact.
 
