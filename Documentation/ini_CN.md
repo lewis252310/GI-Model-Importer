@@ -1,5 +1,5 @@
 <!--
-V1.2.0
+V1.3.1
 Author: lewis252310 (DC-AGMG !someone name has 63B long?)
 Helper: LeoMod, DiXiao, silent
 
@@ -152,6 +152,23 @@ ini 的簡單介紹就到這裡，基本上只要知道怎麼分辨節跟參數�
 
 └ [separation](#separation)
 
+
+[[CustomShader*]](#customshader)
+
+├ [topology](#topology)
+
+├ [cull](#cull)
+
+├ [fill](#fill)
+
+├ [blend](#blend)
+
+├ [alpha](#alpha)
+
+├ [max_executions_per_frame](#max_executions_per_frame)
+
+└ [alpha_to_coverage](#alpha_to_coverage)
+
 > 如果沒有在這裡找到你需要的，那可能是保留字或修飾詞。
 
 ---
@@ -170,7 +187,7 @@ ini 的簡單介紹就到這裡，基本上只要知道怎麼分辨節跟參數�
 
 [persist](#persist)
 
-[ref](#ref)
+[ref | reference](#ref)
 
 [copy](#copy)
 
@@ -672,7 +689,7 @@ release_delay = 600
 
 #### transition
 **注意，現在還不清楚這個參數在 GIMI 中的作用，所以不過多論述。**
-平滑過度物件在兩個關鍵幀之間的視覺效果。
+觸發時，平滑過度物件在兩個關鍵幀之間的視覺效果。
 單位為毫秒(ms)。
 ```ini
 [KeyK]
@@ -694,7 +711,7 @@ transition_type = linear
 
 #### release_transition
 **注意，現在還不清楚這個參數在 GIMI 中的作用，所以不過多論述。**
-平滑過度物件在兩個關鍵幀之間的視覺效果。
+釋放時，平滑過度物件在兩個關鍵幀之間的視覺效果。
 單位為毫秒(ms)。
 ```ini
 [KeyK]
@@ -729,6 +746,195 @@ convergence = 0.7
 [KeyK]
 key = k
 separation = 1.2
+```
+
+## CustomShader
+
+運行我們自己的著色器
+```ini
+[CustomShaderWOW]
+handling = skip
+drawindexed = auto
+```
+
+#### topology
+更改物件的渲染類型。[這裡](https://learn.microsoft.com/en-us/windows/win32/direct3d11/d3d11-primitive-topology  
+)有更詳細的資訊。
+可用值：  
+ - point_list  
+ - line_list  
+ - line_strip  
+ - triangle_list  
+ - triangle_strip  
+ - line_list_adj  
+ - line_strip_adj  
+ - triangle_list_adj  
+ - triangle_strip_adj  
+ - 1_control_point_patch_list  
+ - 2_control_point_patch_list  
+ - 3_control_point_patch_list  
+ - 4_control_point_patch_list  
+ - 5_control_point_patch_list  
+ - 6_control_point_patch_list  
+ - 7_control_point_patch_list  
+ - 8_control_point_patch_list  
+ - 9_control_point_patch_list  
+ - 10_control_point_patch_list  
+ - 11_control_point_patch_list  
+ - 12_control_point_patch_list  
+ - 13_control_point_patch_list  
+ - 14_control_point_patch_list  
+ - 15_control_point_patch_list  
+ - 16_control_point_patch_list  
+ - 17_control_point_patch_list  
+ - 18_control_point_patch_list  
+ - 19_control_point_patch_list  
+ - 20_control_point_patch_list  
+ - 21_control_point_patch_list  
+ - 22_control_point_patch_list  
+ - 23_control_point_patch_list  
+ - 24_control_point_patch_list  
+ - 25_control_point_patch_list  
+ - 26_control_point_patch_list  
+ - 27_control_point_patch_list  
+ - 28_control_point_patch_list  
+ - 29_control_point_patch_list  
+ - 30_control_point_patch_list  
+ - 31_control_point_patch_list  
+ - 32_control_point_patch_list  
+```ini
+[CustomShaderTopology]
+topology = point_list
+handling = skip
+drawindexed = auto
+```
+
+#### cull
+
+指定不繪製朝向特定方向的三角形。[這裡](https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_cull_mode  )有更詳細的資訊。
+可用值：
+ - none  
+ - front  
+ - back  
+```ini
+[CustomShaderCull]
+cull = none
+handling = skip
+drawindexed = auto
+```
+
+#### fill
+
+指定渲染三角形時使用的填充方式。[這裡](https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_fill_mode)有更詳細的資訊。
+可用值：  
+ - wireframe    
+ - solid    
+```ini
+[CustomShaderFill]
+fill = solid
+handling = skip
+drawindexed = auto
+```
+
+#### blend
+  
+Blend 因子，用於調節像素著色器和渲染目標的值。[這裡](https://learn.microsoft.com/en-us/windows/win32/api/d3d11/ne-d3d11-d3d11_blend)有更詳細的資訊。
+兩種應用方式。
+
+1. blend = disable  
+2. blend = BlendOp SrcBlend DestBlend
+
+其中 SrcBlend 和 DestBlend 可用值有：  
+ - zero  
+ - one  
+ - src_color  
+ - inv_src_color  
+ - src_alpha  
+ - inv_src_alpha  
+ - dest_alpha  
+ - inv_dest_alpha  
+ - dest_color  
+ - inv_dest_color  
+ - src_alpha_sat  
+ - blend_factor  
+ - inv_blend_factor  
+ - src1_color  
+ - inv_src1_color  
+ - src1_alpha  
+ - inv_src1_alpha  
+
+BlendOp 可用值有：  
+ - add  
+ - subtract  
+ - rev_subtract  
+ - min  
+ - max  
+
+而 blend 是 blend[0]~blend[7]
+
+```ini
+[CustomShaderBlend]
+blend[0] = add src_alpha inv_src_alpha
+handling = skip
+drawindexed = auto
+```
+
+#### alpha
+
+alpha = BlendOpAlpha SrcBlendAlpha DestBlendAlpha
+
+其中 SrcBlendAlpha 和 DestBlendAlpha 可用值有：  
+ - zero  
+ - one  
+ - src_color  
+ - inv_src_color  
+ - src_alpha  
+ - inv_src_alpha  
+ - dest_alpha  
+ - inv_dest_alpha  
+ - dest_color  
+ - inv_dest_color  
+ - src_alpha_sat  
+ - blend_factor  
+ - inv_blend_factor  
+ - src1_color  
+ - inv_src1_color  
+ - src1_alpha  
+ - inv_src1_alpha  
+
+BlendOpAlpha 可用值有：
+ - add  
+ - subtract  
+ - rev_subtract  
+ - min  
+ - max  
+
+而 alpha 是 alpha[0]-alpha[7]
+
+```ini
+[CustomShaderAlpha]
+alpha[0] = add src_alpha inv_src_alpha
+handling = skip
+drawindexed = auto
+```
+
+#### max_executions_per_frame
+**資料過少無法翻譯。**
+max_executions_per_frame to limit this to the first time the reflection。
+```ini
+[CustomShaderMEPF]
+max_executions_per_frame = 1
+handling = skip
+drawindexed = auto
+```
+
+#### alpha_to_coverage
+Alpha-to-coverage 是一種多採樣技術，對於茂密樹葉等情況最有用。其中存在多個使用 Alpha 透明度來定義表面內邊緣的重疊多邊形。
+```ini
+[CustomShaderATC]
+alpha_to_coverage = 0
+handling = skip
+drawindexed = auto
 ```
 
 ---
@@ -873,7 +1079,7 @@ endif
 | !=        | Not equal      |                   |
 | !==       | Not equal      | 同 `!=` 但是更嚴格 |
 
-#### 邏輯運算福 (Logical Operators)
+#### 邏輯運算符 (Logical Operators)
 
 這只是一個在 GIMI 允許使用的邏輯運算符列表，不包含任何教程。
 
