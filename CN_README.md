@@ -1,5 +1,10 @@
 [EN](README.md) | 中文
 
+# 注意！這裡不是 [GIMI 的主儲存庫](https://github.com/SilentNightSound/GI-Model-Importer)，不要在這裡報告任何有關 GIMI 的錯誤。
+## 這個儲存庫用於構建 GIMI Docs 的 CN 翻譯版本，僅接受 Docs 相關問題。
+
+---
+
 # Genshin-Impact-Model-Importer (GIMI)
 
 原神导入自定义模型的工具和说明
