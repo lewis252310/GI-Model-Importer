@@ -23,31 +23,18 @@ import re
 import argparse
 import hashlib
 
-import ctypes
-
 from enum import Enum
-
-
-def log(msg: str):
-    print(len(msg))
-    if "\n" in msg:
-        print("Found \\n. Follow setted string.\n")
-        print(msg)
-    else:
-        print("Not found \\n. Run auto string cutting.\n")
-        print(msg)
-
 
 class Message(Enum):
     ARG_DISCRIPTION = "從多個mod文件夾生成合併mod"
     ARG_HELP_ROOT = "用於創建mod的位置"
     ARG_HELP_STORE = "在完成後保留原始的 .ini 文件啟用狀態"
-    ARG_HELP_ENABLE = ""
-    ARG_HELP_NAME = ""
-    ARG_HELP_KEY = ""
-    ARG_HELP_COMPRESS = ""
-    ARG_HELP_ACTIVE = ""
-    ARG_HELP_REFLECTION = ""
+    ARG_HELP_ENABLE = "重新啟用已禁用的 .ini 文件"
+    ARG_HELP_NAME = "最終 .ini 文件的名稱"
+    ARG_HELP_KEY = "切換mod所需的按鍵"
+    ARG_HELP_COMPRESS = "使輸出的mod盡可能小（警告：難以還原，建議備份）"
+    ARG_HELP_ACTIVE = "僅在切換時更換活動角色"
+    ARG_HELP_REFLECTION = "為3.0+角色應用反射修復"
 
     INFO_TITLE = "\x1b[7m\n某知名動漫遊戲模組合併/切換生成器腳本\x1b[0m\n"
     INFO_ACTIVE = "設置為僅交換當前（在屏幕上顯示的）角色"
@@ -85,14 +72,14 @@ class Message(Enum):
 
 def main():
     parser = argparse.ArgumentParser(description=Message.ARG_DISCRIPTION.value)
-    parser.add_argument("-r", "--root", type=str, default=".", help=Message.ARG_HELP_ROOT)
-    parser.add_argument("-s", "--store", action="store_true", help="在完成後保留原始的 .ini 文件啟用狀態")
-    parser.add_argument("-e", "--enable", action="store_true", help="重新啟用已禁用的 .ini 文件")
-    parser.add_argument("-n", "--name", type=str, default="merged.ini", help="最終 .ini 文件的名稱")
-    parser.add_argument("-k", "--key", type=str, default="", help="切換mod所需的按鍵")
-    parser.add_argument("-c", "--compress", action="store_true", help="使輸出的mod盡可能小（警告：難以還原，建議備份）")
-    parser.add_argument("-a", "--active", action="store_true", default=True, help="僅在切換時更換活動角色")
-    parser.add_argument("-ref", "--reflection", action="store_true", help="為3.0+角色應用反射修復")
+    parser.add_argument("-r", "--root", type=str, default=".", help=Message.ARG_HELP_ROOT.value)
+    parser.add_argument("-s", "--store", action="store_true", help=Message.ARG_HELP_STORE.value)
+    parser.add_argument("-e", "--enable", action="store_true", help=Message.ARG_HELP_ENABLE.value)
+    parser.add_argument("-n", "--name", type=str, default="merged.ini", help=Message.ARG_HELP_NAME.value)
+    parser.add_argument("-k", "--key", type=str, default="", help=Message.ARG_HELP_KEY.value)
+    parser.add_argument("-c", "--compress", action="store_true", help=Message.ARG_HELP_COMPRESS.value)
+    parser.add_argument("-a", "--active", action="store_true", default=True, help=Message.ARG_HELP_ACTIVE.value)
+    parser.add_argument("-ref", "--reflection", action="store_true", help=Message.ARG_HELP_REFLECTION.value)
 
     args = parser.parse_args()
 
