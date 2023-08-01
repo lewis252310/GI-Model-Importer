@@ -6,7 +6,7 @@
 #   HummyR#8131, Modder4869#4818 (3.0+ Character Shader Fix)
 
 #   !someone name has 63B long?#lewis252310 (Translatable version, CN translation ver)
-# V3.0 of Mod Merger/Toggle Creator Script
+# V3.1 of Mod Merger/Toggle Creator Script
 
 # Merges multiple mods into one, which can be toggled in-game by pressing a key
 
@@ -24,6 +24,9 @@ import argparse
 import hashlib
 
 from enum import Enum
+
+
+# ----- | Localization Language Setting Start | ----- #
 
 class Message(Enum):
     ARG_DISCRIPTION = "從多個mod文件夾生成合併mod"
@@ -69,6 +72,8 @@ class Message(Enum):
     ERROR_INDEX_LESS_ZERO = "\n\x1b[31m錯誤：所選縮引值小於 0\x1b[0m\n"
     ERROR_ENTER = "\n\x1b[31m錯誤：只能輸入您要合併的模組的索引，並請用空格分隔（例如：3 0 1 2）\x1b[0m\n"
 
+# ----- | Localization Language Setting End | ----- #
+
 
 def main():
     parser = argparse.ArgumentParser(description=Message.ARG_DISCRIPTION.value)
@@ -85,12 +90,20 @@ def main():
 
     print(Message.INFO_TITLE.value)
 
-    enable = input(Message.WARN_REMERGE_CHECK.value)
-    if enable == "-e":
-        args.enable = True
-
     if args.active:
         print(Message.INFO_ACTIVE.value)
+
+    if not args.enable:
+        for _, _, fs in os.walk(args.root):
+            for f in fs:
+                if (".ini" in f and "disabled" in f.lower()):
+                    print("\x1b[33m發現已被禁用的 .ini 檔案。正在試圖重新合併或新增合併嗎？\x1b[0m")
+                    print("如果是，請輸入 '\x1b[33m-e\x1b[0m'。否則請直接回車空行。")
+                    print("這將會將當前資料夾下所有已禁用的 .ini 檔案重新啟用，這樣腳本就就能夠重新合併他們了。")
+                    e = input()
+                    if e == "-e":
+                        args.enable = True
+                        break
 
     if args.enable:
         print(Message.INFO_ENABLE.value)
@@ -126,7 +139,6 @@ def main():
     if args.key:
         key = args.key
     else:
-        print()
         key = input(Message.INFO_TOGGLE_KEY.value)
         while not key or len(key) != 1:
             print(Message.ERROR_TOGGLE_KEY.value)
@@ -447,13 +459,5 @@ def parse_section(section):
     return mod_data
 
 
-def config_state_colored_text(v: bool):
-    if v == True:
-        return "\x1b[32mTrue\x1b[0m"
-    else:
-        return "\x1b[31mFalse\x1b[0m"
-
-
 if __name__ == "__main__":
-    # print("\x1b[31mTExt\x1b[0m")
     main()
