@@ -42,15 +42,15 @@ class Message(Enum):
     INFO_TITLE = "\x1b[7m\n某知名動漫遊戲模組合併/切換生成器腳本\x1b[0m\n"
     INFO_ACTIVE = "設置為僅交換當前（在屏幕上顯示的）角色"
     INFO_ENABLE = "重新啟用所有 .ini 文件"
-    INFO_STORE_1 = "\n\x1b[33m警告：一旦此腳本完成，它將禁用被合併的 Mod 各自的 .ini 文件（為了讓最終版本在沒有衝突的情況下運作，這是必需的）"
-    INFO_STORE_2 = "您可以使用 -s 選項來阻止此行為"
-    INFO_STORE_3 = "此腳本還可以使用 -e 選項重新啟用當前文件夾及其所有子文件夾中的所有 mod，如果需要重新生成合併的 ini，請使用此選項\x1b[0m"
-    INFO_COMPRESS = "\n警告2：-c/--compress 選項將使輸出變得更小，但從合併後的 mod 中檢索原始 mod 將變得困難。請確保有備份，並且請在確保一切正常後再使用此選項"
+    INFO_STORE = """\n\x1b[33m警告：一旦此腳本完成，它將禁用被合併的 Mod 各自的 .ini 文件（為了讓最終版本在沒有衝突的情況下運作，這是必需的）
+您可以使用 -s 選項來阻止此行為
+此腳本還可以使用 -e 選項重新啟用當前文件夾及其所有子文件夾中的所有 mod，如果需要重新生成合併的 ini，請使用此選項\x1b[0m"""
+    INFO_COMPRESS = "\n警告：-c/--compress 選項將使輸出變得更小，但從合併後的 mod 中檢索原始 mod 將變得困難。請確保有備份，並且請在確保一切正常後再使用此選項"
     INFO_INI_SEARCH = "\n搜索 .ini 文件中…"
     INFO_INI_FOUND = "\n找到："
-    INFO_HOW_THIS_WORK_1 = "\n此腳本將按上述列出的順序進行合併（0 是 mod 開始的默認設置，並將循環 0,1,2,3,4,0,1...等等）"
-    INFO_HOW_THIS_WORK_2 = "如果沒問題，請按回車繼續。如果有問題，請輸入您希望腳本合併 mod 的順序（例如：3 0 1 2）"
-    INFO_HOW_THIS_WORK_3 = "如果輸入的順序數量小於總數量，腳本將只合併列出的順序。\n"
+    INFO_HOW_THIS_WORK = """\n此腳本將按上述列出的順序進行合併（0 是 mod 開始的默認設置，並將循環 0,1,2,3,4,0,1...等等）
+如果沒問題，請按回車繼續。如果有問題，請輸入您希望腳本合併 mod 的順序（例如：3 0 1 2）
+如果輸入的順序數量小於總數量，腳本將只合併列出的順序。\n"""
     INFO_TOGGLE_KEY = "\n請輸入用於切換 mod 的按鍵（也可以使用 -k 選項輸入，或在 .ini 文件中稍後設定）。按鍵必須是一個單獨的字母\n"
     INFO_INI_PARSING = "正在解析 .ini 文件…"
     INFO_CALUCUATING_OVR_RES_SECTION = "正在計算 Overrides 節和 Resources 節…"
@@ -63,8 +63,8 @@ class Message(Enum):
 
     WARN_REMERGE_CHECK = "\x1b[33m如果是重新合併已合併的 Mod，請輸入 '-e'，否則請回車空行繼續。\x1b[0m\n"
 
-    ERROR_INI_NOT_FOUND_1 = "\x1b[31m\n找不到 .ini 文件 - 請確保 mod 文件夾與此腳本在同一個文件夾中。\x1b[0m"
-    ERROR_INI_NOT_FOUND_2 = "\x1b[31m如果在已經屬於切換 mod 的一組文件上使用此腳本，請使用 -e 選項啟用 .ini 文件並重新生成合併的 ini\x1b[0m\n"
+    ERROR_INI_NOT_FOUND = """\x1b[31m\n找不到 .ini 文件 - 請確保 mod 文件夾與此腳本在同一個文件夾中。
+如果在已經屬於切換 mod 的一組文件上使用此腳本，請使用 -e 選項啟用 .ini 文件並重新生成合併的 ini\x1b[0m\n"""
     ERROR_TOGGLE_KEY = "\n\x1b[31m按鍵無法識別，必須是一個單獨的字母\x1b[0m\n"
     ERROR_TO_MORE_ENTER_ORDER = "\n\x1b[31m錯誤：只能輸入欲合併的模組的數量\x1b[0m\n"
     ERROR_DUPLIVATE_ORDER = "\n\x1b[31m錯誤：每個模組的編號最多只能輸入一次\x1b[0m\n"
@@ -111,9 +111,7 @@ def main():
         print()
 
     if not args.store:
-        print(Message.INFO_STORE_1.value)
-        print(Message.INFO_STORE_2.value)
-        print(Message.INFO_STORE_3.value)
+        print(Message.INFO_STORE.value)
 
     if args.compress:
         print(Message.INFO_COMPRESS.value)
@@ -122,8 +120,7 @@ def main():
     ini_files = collect_ini(args.root, args.name)
 
     if not ini_files:
-        print(Message.ERROR_INI_NOT_FOUND_1.value)
-        print(Message.ERROR_INI_NOT_FOUND_2.value)
+        print(Message.ERROR_INI_NOT_FOUND.value)
         input(Message.INFO_ENTER_ANY_KEY_CONTINUE.value)
         return
 
@@ -131,9 +128,7 @@ def main():
     for i, ini_file in enumerate(ini_files):
         print(f"\t{i}:  {ini_file}")
 
-    print(Message.INFO_HOW_THIS_WORK_1.value)
-    print(Message.INFO_HOW_THIS_WORK_2.value)
-    print(Message.INFO_HOW_THIS_WORK_3.value)
+    print(Message.INFO_HOW_THIS_WORK.value)
     ini_files = get_user_order(ini_files)
 
     if args.key:
