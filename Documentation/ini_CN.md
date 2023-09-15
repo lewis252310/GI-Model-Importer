@@ -626,8 +626,7 @@ key = XB_X
    ```ini
    [KeyK]
    key = k
-   type = cycle
-   $swapvar = 0, 1, 2, 3
+   run = CommandListSwapLumineThong
    ```
 2. cycle：循環。按順序遍歷所寫列表，可藉由 [warp](#warp) 控制是否頭尾相連循環。
     ```ini
@@ -1088,6 +1087,7 @@ endif
 | -         | Subtraction    |                   |
 | *         | Multiplication |                   |
 | /         | Division       |                   |
+| //        | Floor          | 類似向下取整的操作  |
 | %         | Modulus        |                   |
 | =         | Assignment     |                   |
 | ==        | Equal          |                   |
