@@ -23,6 +23,7 @@ Helper: LeoMod, DiXiao, silent
 所以這邊只會用最簡短的方式告訴你如何看懂 ini。
 底下這是個範例，來源是一個很普通的 mod。
 ![img](./ini_code_simple.png)
+
 可以簡單分成三個部分。節、參數與註解。
 其中節和參數無大小寫之分，但在 GIMI 裡節會以大駝峰風格進行編寫。
 
@@ -106,9 +107,9 @@ ini 的簡單介紹就到這裡，基本上只要知道怎麼分辨節跟參數�
 └ [match_array](#match_array)
 
 
-[[Resourse*]](#resource)
+[[Resource*]](#resource)
 
-├ [type](#type-resourse)
+├ [type](#type-Resource)
 
 ├ [filename](#filename)
 
@@ -517,9 +518,30 @@ match_array = 12
 [ResourceMyRGBWeapon]
 ```
 
-#### type (Resourse)
-這的是 [Resourse](#resource) 下的參數，而不是 [Key](#key-section) 下的參數。
-宣告這個資源的類型，一般來說只會用到緩衝(Buffer)類型。
+#### type (Resource)
+這的是 [Resource](#resource) 下的參數，而不是 [Key](#key-section) 下的參數。
+用於指定資源的類型。
+在 3DMigoto 中有 15 種類型，但實際情況是 7 種。
+
+主要的 7 種：
+ - Buffer
+ - StructuredBuffer
+ - ByteAddressBuffer
+ - Texture1D
+ - Texture2D
+ - Texture3D
+ - TextureCube
+
+其他：
+ - AppendStructuredBuffer
+ - ConsumeStructuredBuffer
+ - RWBuffer
+ - RWStructuredBuffer
+ - RWByteAddressBuffer
+ - RWTexture1D
+ - RWTexture2D
+ - RWTexture3D
+
 ```ini
 [ResourceLuminePantsuPosition]
 type = Buffer
@@ -527,7 +549,7 @@ type = Buffer
 
 #### filename
 
-只出現在 [Resourse](#resource) 底下，使用相對路徑指向資源的儲存位置。
+只出現在 [Resource](#resource) 底下，使用相對路徑指向資源的儲存位置。
 不清楚是否支持絕對路徑，但在這種可轉發數據資料中使用絕對路徑也沒有意義。
 ```ini
 [ResourceLumineBodyDiffuse]
@@ -535,7 +557,8 @@ filename = .\Lumineparts\LumineBodyDiffuse.dds
 ```
 
 #### format
-用於 IB 資源，單個縮引值的大小
+用於指定特定的資源格式。
+可用格式列表[請戳我](https://learn.microsoft.com/en-gb/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
 ```ini
 [ResourceLumineBodyIB]
 format = DXGI_FORMAT_R32_UINT
@@ -549,11 +572,31 @@ stride = 20
 ```
 
 #### data
-用於詳細日誌紀錄、用戶介面文本等
+用於緩衝區資源
 ```ini
-[ResourceLuminePantsu]
+[ResourceFloat]
+type = Buffer
+format = R32_FLOAT
+data = 1 2 3 4
+```
+
+data 還可以將前 128 個 ASCII 字元轉換到緩衝區中 (不過僅限 `R8_UINT` 格式)
+```ini
+[ResourceString]
+type = Buffer
+format = R8_UINT
 data = "Jsut a string."
 ```
+如上述例子，我們可以獲得一個具有以下值的緩衝區：
+`74 115 117 116 32 97 32 115 116 114 105 110 103 46`
+這就是 `Jsut a string.` 整個文本的 ASCII 編碼值。
+
+
+#### 額外註記
+理論上可以實時輸出變數的值
+但需要找到變數的對應內存位置
+所以基本可以洗洗睡了
+個人建議在 Present 節中使用 if 串進行枚舉再另行操作。
 
 ---
 
@@ -620,7 +663,7 @@ key = XB_X
 
 #### type (Key)
 
-這的是 [Key section](#key-section) 下的參數，而不是 [Resourse](#resource) 下的參數。
+這的是 [Key section](#key-section) 下的參數，而不是 [Resource](#resource) 下的參數。
 宣告 [key](#key-properties) 的類型。有四種可用值，分別是默認、cycle、hold 及 toggle。
 1. 默認：單純運行。沒有寫 type 時默認的類型，單純運行所寫配置。
    ```ini
@@ -1040,7 +1083,7 @@ store 是一個非常資源複雜性的運算保留字，使用過於頻繁可�
 ```ini
 store = $health, ps-cb0, 33
 ```
-例子中 $health 是用於儲存值的變數，ps-cb0 是 ps 資源層中的輸入值之一，33 則是在 ps-cb0 中要提取的值的 index。
+例子中 $health 是用於儲存值的變數，ps-cb0 是 ps 資源層中的輸入值之一，33 則是在 ps-cb0 中要提取的值的 index -1。
 ps、vs 資源層可以在他們各自的 .txt 轉儲中找到，值 index 則需要進行幀轉儲並尋找對應 hash 的 .txt 文件。
 如果還有其他問題歡迎到 DC 進行詢問。
  -->
